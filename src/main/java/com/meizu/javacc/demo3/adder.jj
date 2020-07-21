@@ -1,0 +1,44 @@
+options {
+STATIC = false;
+}
+
+PARSER_BEGIN(Adder)
+    package com.meizu.javacc.demo2;
+    import java.io.ByteArrayInputStream;
+
+    class Adder {
+        public Adder(String expression) {
+            this(new ByteArrayInputStream(expression.getBytes()));
+        }
+    }
+PARSER_END(Adder)
+
+SKIP: {" "}
+SKIP: {"\n" | "\r" | "\r\n"}
+TOKEN: {<PLUS: "+">}
+TOKEN: {<NUMBER: (["0"-"9"])+>}
+
+int start() throws NumberFormatException:
+{
+    int i;
+    int value;
+}
+{
+    value = primary()
+    (
+        <PLUS>
+        i = primary()
+        {value += i;}
+    )*
+    <EOF>
+    {return value;}
+}
+
+int primary() throws NumberFormatException:
+{
+    Token t;
+}
+{
+    t = <NUMBER>
+    {return Integer.parseInt(t.image);}
+}

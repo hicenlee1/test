@@ -1,0 +1,68 @@
+options {
+STATIC = false;
+}
+
+PARSER_BEGIN(Adder)
+    package com.meizu.javacc.demo3;
+    import java.io.ByteArrayInputStream;
+    import java.io.PrintStream;
+
+    class Adder {
+        public Adder(String expression) {
+            this(new ByteArrayInputStream(expression.getBytes()));
+        }
+
+        double priviousValue = 0.0;
+    }
+PARSER_END(Adder)
+
+SKIP: {" "}
+SKIP: {"\n" | "\r" | "\r\n" }
+TOKEN: {<PLUS: "+">}
+TOKEN : { < NUMBER : <DIGITS>
+                   | <DIGITS> "." <DIGITS>
+                   | <DIGITS> "."
+                   | "."<DIGITS> >
+        }
+TOKEN : { < #DIGITS : (["0"-"9"])+ > }
+TOKEN : {<EOL:"#">}
+
+void start(PrintStream ps) throws NumberFormatException:
+{
+
+}
+{
+    (
+        priviousValue = Expression()
+        <EOL> {ps.println(priviousValue);}
+    )*
+    <EOF>
+}
+
+double Expression() throws NumberFormatException:
+{
+    double i;
+    double value;
+}
+{
+    value = primary()
+    (
+        <PLUS>
+        i = primary()
+        {value += i;}
+    )*
+    {return value;}
+
+}
+
+
+
+
+double primary() throws NumberFormatException:
+{
+    Token t;
+}
+{
+    t = <NUMBER>
+    {return Double.parseDouble(t.image);}
+}
