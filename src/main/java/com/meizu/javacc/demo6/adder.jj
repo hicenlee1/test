@@ -1,10 +1,10 @@
-/* 支持乘除*/
+/* 支持括号，一元运算符 */
 options {
 STATIC = false;
 }
 
 PARSER_BEGIN(Adder)
-    package com.meizu.javacc.demo5;
+    package com.meizu.javacc.demo6;
     import java.io.ByteArrayInputStream;
     import java.io.PrintStream;
 
@@ -29,6 +29,10 @@ TOKEN : { < NUMBER : <DIGITS>
                    | "."<DIGITS> >
         }
 TOKEN : { < #DIGITS : (["0"-"9"])+ > }
+TOKEN : {<OPEN_PAR: "(">}
+TOKEN : {<CLOSE_PAR: ")">}
+TOKEN : {<PREVIOUS: "$">}
+TOKEN : {<EOL: "#">}
 
 void start(PrintStream ps) throws NumberFormatException:
 {
@@ -37,7 +41,7 @@ void start(PrintStream ps) throws NumberFormatException:
 {
     (
         priviousValue = Expression()
-        {ps.println(priviousValue);}
+        <EOL>{ps.println(priviousValue);}
     )*
     <EOF>
 }
@@ -48,7 +52,7 @@ double Expression() throws NumberFormatException:
     double value;
 }
 {
-    value = primary()
+    value = Term()
     (
         <PLUS>
             i = Term()
@@ -84,8 +88,15 @@ double Term() throws NumberFormatException:
 double primary() throws NumberFormatException:
 {
     Token t;
+    double d;
 }
 {
     t = <NUMBER>
-    {return Double.parseDouble(t.image);}
+        {return Double.parseDouble(t.image);}
+    | <PREVIOUS>
+        {return priviousValue; }
+    | <OPEN_PAR> d=Expression() <CLOSE_PAR>
+        {return d;}
+    | <MINUS> d=primary()
+        {return -d;}
 }

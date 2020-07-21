@@ -3,12 +3,12 @@ STATIC = false;
 }
 
 PARSER_BEGIN(Adder)
-    package com.meizu.javacc.demo;
+    package com.meizu.javacc.demo2;
+    import java.io.ByteArrayInputStream;
 
     class Adder {
-        public static void main(String[] args) throws ParseException, TokenMgrError {
-            Adder parser = new Adder(System.in);
-            parser.start();
+        public Adder(String expression) {
+            this(new ByteArrayInputStream(expression.getBytes()));
         }
     }
 PARSER_END(Adder)
@@ -18,13 +18,27 @@ SKIP: {"\n" | "\r" | "\r\n"}
 TOKEN: {<PLUS: "+">}
 TOKEN: {<NUMBER: (["0"-"9"])+>}
 
-void start():
-{}
+int start() throws NumberFormatException:
 {
-    <NUMBER>
+    int i;
+    int value;
+}
+{
+    value = primary()
     (
         <PLUS>
-        <NUMBER>
+        i = primary()
+        {value += i;}
     )*
     <EOF>
+    {return value;}
+}
+
+int primary() throws NumberFormatException:
+{
+    Token t;
+}
+{
+    t = <NUMBER>
+    {return Integer.parseInt(t.image);}
 }

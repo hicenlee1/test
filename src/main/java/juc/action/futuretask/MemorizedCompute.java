@@ -13,6 +13,7 @@ public class MemorizedCompute<K, V> implements Computable<K, V> {
 
     @Override
     public V compute(K k) {
+        //use  while-loop in case  CancellationException, then retry
         while (true) {
             FutureTask<V> ftv = cache.get(k);
             if (ftv == null) {
@@ -32,11 +33,12 @@ public class MemorizedCompute<K, V> implements Computable<K, V> {
             try {
                 return ftv.get();
             } catch (CancellationException e) {
+                //cancel  remove from map and retry
                 cache.remove(k, ftv);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             } catch (ExecutionException e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         }
 

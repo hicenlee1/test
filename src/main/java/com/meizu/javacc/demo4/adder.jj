@@ -1,9 +1,10 @@
+/* 支持减法*/
 options {
 STATIC = false;
 }
 
 PARSER_BEGIN(Adder)
-    package com.meizu.javacc.demo3;
+    package com.meizu.javacc.demo4;
     import java.io.ByteArrayInputStream;
     import java.io.PrintStream;
 
@@ -19,13 +20,13 @@ PARSER_END(Adder)
 SKIP: {" "}
 SKIP: {"\n" | "\r" | "\r\n" }
 TOKEN: {<PLUS: "+">}
+TOKEN: {<MINUS: "-">}
 TOKEN : { < NUMBER : <DIGITS>
                    | <DIGITS> "." <DIGITS>
                    | <DIGITS> "."
                    | "."<DIGITS> >
         }
 TOKEN : { < #DIGITS : (["0"-"9"])+ > }
-TOKEN : {<EOL:"#">}
 
 void start(PrintStream ps) throws NumberFormatException:
 {
@@ -34,7 +35,7 @@ void start(PrintStream ps) throws NumberFormatException:
 {
     (
         priviousValue = Expression()
-        <EOL> {ps.println(priviousValue);}
+        {ps.println(priviousValue);}
     )*
     <EOF>
 }
@@ -48,8 +49,11 @@ double Expression() throws NumberFormatException:
     value = primary()
     (
         <PLUS>
-        i = primary()
-        {value += i;}
+            i = primary()
+            {value += i;}
+        | <MINUS>
+            i = primary()
+            {value -= i;}
     )*
     {return value;}
 

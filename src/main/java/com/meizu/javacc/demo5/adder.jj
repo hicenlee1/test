@@ -1,10 +1,10 @@
-/* 支持减法*/
+/* 支持乘除*/
 options {
 STATIC = false;
 }
 
 PARSER_BEGIN(Adder)
-    package com.meizu.javacc.demo4;
+    package com.meizu.javacc.demo5;
     import java.io.ByteArrayInputStream;
     import java.io.PrintStream;
 
@@ -21,6 +21,8 @@ SKIP: {" "}
 SKIP: {"\n" | "\r" | "\r\n" }
 TOKEN: {<PLUS: "+">}
 TOKEN: {<MINUS: "-">}
+TOKEN: {<TIMES: "*">}
+TOKEN: {<DIVIDE:"/">}
 TOKEN : { < NUMBER : <DIGITS>
                    | <DIGITS> "." <DIGITS>
                    | <DIGITS> "."
@@ -46,13 +48,13 @@ double Expression() throws NumberFormatException:
     double value;
 }
 {
-    value = primary()
+    value = Term()
     (
         <PLUS>
-            i = primary()
+            i = Term()
             {value += i;}
         | <MINUS>
-            i = primary()
+            i = Term()
             {value -= i;}
     )*
     {return value;}
@@ -60,6 +62,23 @@ double Expression() throws NumberFormatException:
 }
 
 
+double Term() throws NumberFormatException:
+{
+    double i;
+    double value;
+}
+{
+    value = primary()
+    (
+        <TIMES>
+            i = primary()
+            {value *= i;}
+        |<DIVIDE>
+            i = primary()
+            {value /= i;}
+    )*
+    {return value;}
+}
 
 
 double primary() throws NumberFormatException:
