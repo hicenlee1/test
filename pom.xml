@@ -16,7 +16,7 @@
         <!--框架整体结构-->
         <spring.version>4.2.5.RELEASE</spring.version>
         <spring-data-jpa.version>1.10.1.RELEASE</spring-data-jpa.version>
-        <hibernate.version>4.3.11.Final</hibernate.version>
+        <hibernate.version>5.4.24.Final</hibernate.version>
 
 
         <!--下面这两个是springAOP需要用到-->
